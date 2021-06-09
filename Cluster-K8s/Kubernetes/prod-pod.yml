@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: prod-pod
+  labels:
+    app: prod
+spec:
+  containers:
+    - name: prod
+      image: aminebou/mycicd:v1.0
+
