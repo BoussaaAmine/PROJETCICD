@@ -1,0 +1,40 @@
+-
+  name: Deploy to ubuntus
+  hosts: ubuntu
+  vars:
+    - TARGET_DIR: /home/jenkins/pythonservice/
+
+  tasks:
+    - name: Create build directory
+      file:
+        path: "{{TARGET_DIR}}"
+        state: directory
+
+    - name: Copy Dockerfile + app files
+      copy:
+        src: ./{{item}}
+        dest: "{{TARGET_DIR}}"
+      with_items:
+        - 'Dockerfile'
+        - 'main.py'
+
+    - name: Build docker image
+      docker_image:
+        path: "{{TARGET_DIR}}"
+        name: pythonservice
+        tag: v1
+
+    - name: Run containers
+      tags: run_containers
+      docker_container:
+        name: "{{item.name}}"
+        image: pythonservice:v1
+        state: started
+        forcekill: yes
+        recreate: yes
+        ports:
+          - "{{item.port}}:3000"
+      with_items:
+        - { name: dev-pod, port: 30007 }
+        - { name: test-dpl, port: 30008 }
+        - { name: prod-pod, port: 30009 }
