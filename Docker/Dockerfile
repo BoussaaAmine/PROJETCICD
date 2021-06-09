@@ -1,12 +1,21 @@
-FROM python:3.8-alpine
+FROM python:3.7-alpine
 
-WORKDIR '/app'
-RUN apk --update
-#install git 
-RUN apk add git
+WORKDIR /app
+
+ENV FLASK_RUN_HOST=0.0.0.0
+RUN apk add --no-cache gcc musl-dev linux-headers
+
+RUN apk update \
+ && apk add git
+
 RUN git clone https://github.com/vanessakovalsky/example-python.git
-# install Flask
-RUN pip install Flask
 
+RUN cp example-python/vagrant/src/main.py .
 
-CMD ["python", "./example-python/vagrant/src/main.py"]
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["python", "main.py"]

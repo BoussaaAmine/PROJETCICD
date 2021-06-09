@@ -1,0 +1,44 @@
+pipeline {
+
+  environment {
+        imagename = "michaeltongle/python-app"
+        registryCredential = 'docker'
+        dockerImage = ''
+    }
+
+  agent any
+  stages {
+
+    stage('git') {
+      steps {
+        git branch: 'main',
+            url: 'https://github.com/BoussaaAmine/PROJETCICD.git'
+      }
+    }
+
+    stage('test and stop') {
+      steps {
+        script{
+            dockerImage = docker.build ('$imagename', 'Docker')
+        }
+      }
+    }
+
+    stage('push Image') {
+            steps{
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest') 
+                    }
+                }
+            }
+        }
+
+    stage('deploy') {
+            steps {
+               sh 'ansible playbook'
+            }
+        }  
+  }
+ }
