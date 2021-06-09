@@ -1,0 +1,4 @@
+ansible1 ansible_connection=local ansible_user=vagrant 
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

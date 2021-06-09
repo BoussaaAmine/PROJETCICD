@@ -1,6 +1,6 @@
 -
-  name: Deploy to ubuntus
-  hosts: ubuntu
+  name: Deploy to kubernetes
+  hosts: kube
   vars:
     - TARGET_DIR: /home/jenkins/pythonservice/
 
@@ -9,6 +9,8 @@
       file:
         path: "{{TARGET_DIR}}"
         state: directory
+      become: true
+      become_method: sudo
 
     - name: Copy Dockerfile + app files
       copy:
